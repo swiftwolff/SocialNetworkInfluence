@@ -1,9 +1,22 @@
 from py2neo import neo4j
 import time
+import smtplib
 
 start_time=time.time()
 uri = "http://localhost:8001/db/data/"
 graph_db = neo4j.GraphDatabaseService(uri)
+
+# user_name => 'biddies.help@gmail.com'
+# password => 'biddiespassword'
+
+#Python Email Client
+SMTP_SERVER = 'smtp.gmail.com'
+SMTP_PORT = 587
+
+sender = 'biddies.help@gmail.com'
+password = 'biddiespassword'
+recipient = 'jeff.hsu@west.cmu.edu'
+subject = 'Type Script Result - Research Project'
 
 # node = graph_db.node(12)
 # print type(node)
@@ -165,7 +178,7 @@ def typeCount(typechart,node):
 		connectioncompany = []
 	return typechart
 
-query = neo4j.CypherQuery(graph_db, "START n = node(*) WHERE has(n.nodeType) AND n.nodeType = 0 RETURN n LIMIT 35;")
+query = neo4j.CypherQuery(graph_db, "START n = node(*) WHERE has(n.nodeType) AND n.nodeType = 0 RETURN n LIMIT 1;")
 
 for record in query.stream():
 	node = record[0]
@@ -178,6 +191,29 @@ print typechart
 # print typeCount(typechart,12)
 end_time = time.time()
 print("Elapsed time was %g seconds" % (end_time - start_time))
+
+body = "Elapsed time was %g seconds" % (end_time - start_time)
+ 
+"Sends an e-mail to the specified recipient."
+ 
+body = body + " : " + str(typechart)
+ 
+headers = ["From: " + sender,
+           "Subject: " + subject,
+           "To: " + recipient,
+           "MIME-Version: 1.0",
+           "Content-Type: text/html"]
+headers = "\r\n".join(headers)
+ 
+session = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+ 
+session.ehlo()
+session.starttls()
+session.ehlo
+session.login(sender, password)
+ 
+session.sendmail(sender, recipient, headers + "\r\n\r\n" + body)
+session.quit()
 # Connected + Nothing else = Type 1
 # Connected + high-school = Type 2
 # Connected + college-mate = Type 3
