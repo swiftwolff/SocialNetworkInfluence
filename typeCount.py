@@ -180,11 +180,50 @@ def typeCount(typechart,node):
 
 query = neo4j.CypherQuery(graph_db, "START n = node(*) WHERE has(n.nodeType) AND n.nodeType = 0 RETURN n LIMIT 1;")
 
-for record in query.stream():
-	node = record[0]
-	typeCount(typechart,node)
+record = list(query.stream())
+node = record[0][0]
+connectionschool = {"College":[],"High School":[],"Graduate School":[]}
+connectionschools = []
+connectioncompany = []
+# print node
+# connections = list(node.match_outgoing(rel_type = "CONNECTED", end_node = None)) + \
+# list(node.match_incoming(rel_type = "CONNECTED"))
+# a = connections[len(connections)-1].start_node
+# connectioncompanies = list(a.match_outgoing(rel_type = "WORKED_AT", end_node = None))
+connectionschools = list(node.match_outgoing(rel_type = "STUDIED", end_node = None))
+for i in xrange(0,len(connectionschools)):
+	# print schools[i]._id
+	rel = graph_db.relationship(connectionschools[i]._id)
+	# print rel.get_properties()["educationType"]
+	connectionschool[rel.get_properties()["educationType"]].append(connectionschools[i].end_node.get_properties()["name"])
 
-print typechart
+print connectionschool
+# for k in xrange(0,len(connectioncompanies)):
+# 	connectioncompany.append(connectioncompanies[k].end_node.get_properties()["name"])
+# for l in xrange(0,len(connectionschools)):
+# 			rel = graph_db.relationship(connectionschools[l]._id)
+# 			try:
+# 				connectionschool[rel.get_properties()["educationType"]].append(connectionschools[l].end_node.get_properties()["name"])
+# 			except:
+# 				continue
+
+# print connectionschools[1]
+# print connectionschools[1]._id
+# rel = graph_db.relationship(5)
+# print rel.get_properties()
+# print rel.get_properties()["educationType"]
+
+# print connectionschools[0].end_node.get_properties()["name"]
+# print connectioncompany
+# a = graph_db.node(11)
+# print a.get_properties()
+# print connectionschool
+#################################################GOOD BELOW
+# for record in query.stream():
+# 	node = record[0]
+# 	typeCount(typechart,node)
+
+# print typechart
 
 
 
@@ -212,8 +251,8 @@ session.starttls()
 session.ehlo
 session.login(sender, password)
  
-session.sendmail(sender, recipient, headers + "\r\n\r\n" + body)
-session.quit()
+#session.sendmail(sender, recipient, headers + "\r\n\r\n" + body)
+#session.quit()
 # Connected + Nothing else = Type 1
 # Connected + high-school = Type 2
 # Connected + college-mate = Type 3
